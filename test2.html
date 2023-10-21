@@ -147,9 +147,10 @@
                 x: {
                     type: 'linear',
                     position: 'bottom',
+                    min: 0,
                     title: {
                         display: true,
-                        text: 'sequence number'
+                        text: 'Time'
                     }
                 },
                 y: {
@@ -158,7 +159,7 @@
                     stepSize: 10,
                     title: {
                         display: true,
-                        text: 'numerical value'
+                        text: 'Barrier Resistance (Ω)'
                     }
                 }
             }
@@ -193,7 +194,7 @@
 
         let theTable = document.getElementById('message-table');
         let theCount = theTable.childElementCount;
-        if(theCount<3){
+        if(theCount<5){
         // theTable.insertBefore(tableRow, theTable.firstChild);
         theTable.append(tableRow);
         }
@@ -221,7 +222,7 @@
         chart.data.labels.push(messageCounter);
 
         // 清除旧数据以保持图表的显示数量
-        if (chartData.length > 10) {
+        if (chartData.length > 25) {
             chartData.shift();
             chart.data.labels.shift();
         }
