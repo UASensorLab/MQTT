@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>MQTT Data Receiver</title>
+    <link rel="stylesheet" type="text/css" href="layui.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .container {
+            width: 95%;
+            margin: 0 auto;
+            background-color: #f0f0f0;
+            padding: 20px 5%;
+            border-radius: 10px
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        th, td {
+            width: 33%;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        ul li {
+            line-height: 2.3;
+        }
+
+        a {
+            color: #20a53a;
+        }
+        #theGraphContainer{
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            height: 400px;
+        }
+
+        .innerCharts{
+            padding: 50px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>MQTT Data Receiver</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Time</th>
+            <th>Message</th>
+            <th>Data order</th>
+        </tr>
+        </thead>
+        <tbody id="message-table">
+        <!-- 接收到的消息将在这里显示 -->
+        </tbody>
+    </table>
+    <div id="theGraphContainer">
+       <div class="innerCharts"> <canvas id="graph1"></canvas> </div>
+       <div class="innerCharts"> <canvas id="graph2"></canvas> </div>
+       <div class="innerCharts"> <canvas id="graph3"></canvas> </div>
+    </div>
+    <!-- 添加一个 canvas 元素来显示图表 -->
+    <canvas id="data-chart"></canvas>
+</div>
+<div id="div1"></div>
+<div id="div2"></div>
+<div id="div3"></div>
+</body>
+</html>
+
+<script type="text/javascript">
+    var topic = "test/topic";
+
+    const options = {
+        clean: true,
+        connectTimeout: 4000,
+        clientId: 'htmlclient' + new Date(),
+        username: 'user',
+        password: '123456',
+    }
+
+    const connectUrl = 'ws://149.165.159.142:8083/mqtt'
+    const client = mqtt.connect(connectUrl, options)
+
+    client.on('reconnect', () => {
+        $("#div1").text("Reconnecting...");
+    });
+
+    client.on("close", function () {
+        $("#div1").text("The client has disconnected.....");
+    });
+
+    client.on("disconnect", function (packet) {
+        $("#div1").text("Received disconnected packet from broker....." + packet);
+    });
+
+    client.on("offline", function () {
+        $("#div1").text("The client is offline...");
+    });
+
+    client.on("error", (error) => {
+        $("#div1").text("An error occurred on the client side....." + error);
+    });
+
+    client.on("packetsend", (packet) => {
+        $("#div1").text("The client has sent the packet....." + packet);
+    });
+
+    var messageCounter = 0; // 用于记录收到的消息的顺序
+
+    client.on("packetreceive", (packet) => {
+        $("#div3").text("The client has received the packet....." + packet);
+    });
+
+    client.on("connect", function (connack) {
+        $("#div1").text("Successfully connected to the server" + new Date());
+
+        client.subscribe(topic, { qos: 2 });
+    });
+
+    // 创建一个数组来存储第二列数据
+    var chartData = [];
+
+    // 创建图表
+    var ctx = document.getElementById('data-chart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Message Data',
+                data: chartData,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'bottom',
+                    min: 0,
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    min: 0,
+                    max: 100,
+                    stepSize: 10,
+                    title: {
+                        display: true,
+                        text: 'Barrier Resistance (Ω)'
+                    }
+                }
+            }
+        }
+    });
+
+    let firstGraph = document.getElementById("graph1").getContext("2d");
+    var chart = new Chart(firstGraph, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Message Data',
+                data: chartData,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'bottom',
+                    min: 0,
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    min: 0,
+                    max: 100,
+                    stepSize: 10,
+                    title: {
+                        display: true,
+                        text: 'Barrier Resistance (Ω)'
+                    }
+                }
+            }
+        }
+    });
+
+    let secondGraph = document.getElementById("graph2").getContext("2d");
+    var chart = new Chart(secondGraph, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Message Data',
+                data: chartData,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'bottom',
+                    min: 0,
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    min: 0,
+                    max: 100,
+                    stepSize: 10,
+                    title: {
+                        display: true,
+                        text: 'Barrier Resistance (Ω)'
+                    }
+                }
+            }
+        }
+    });
+
+    let thirdGraph = document.getElementById("graph3").getContext("2d");
+    var chart = new Chart(thirdGraph, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Message Data',
+                data: chartData,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'bottom',
+                    min: 0,
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    min: 0,
+                    max: 100,
+                    stepSize: 10,
+                    title: {
+                        display: true,
+                        text: 'Barrier Resistance (Ω)'
+                    }
+                }
+            }
+        }
+    });
+
+    client.on('message', (topic, message, packet) => {
+        console.log('msg');
+
+        // 获取当前时间
+        var currentTime = new Date();
+
+        // 将接收到的消息分为三部分：时间、message和收到数据的顺序
+        var messageText = message.toString(); // 将消息转换为字符串
+        var messageParts = messageText.split(','); // 按逗号分割消息
+        var receivedData = `[${currentTime}] Message: ${messageParts[1]}, Order: ${messageCounter}, Data: ${message}`;
+        messageCounter++; // 增加消息顺序计数
+
+        // 创建新的表格行并将消息添加到消息表格中
+        var tableRow = document.createElement('tr');
+        var tableData1 = document.createElement('td');
+        var tableData2 = document.createElement('td');
+        var tableData3 = document.createElement('td');
+
+        tableData1.textContent = currentTime;
+        tableData2.textContent = messageParts[1]; // 显示逗号后的数字部分
+        tableData3.textContent = messageCounter;
+
+        tableRow.appendChild(tableData1);
+        tableRow.appendChild(tableData2);
+        tableRow.appendChild(tableData3);
+
+        let theTable = document.getElementById('message-table');
+        let theCount = theTable.childElementCount;
+        if(theCount<5){
+        // theTable.insertBefore(tableRow, theTable.firstChild);
+        theTable.append(tableRow);
+        }
+        else{
+            // console.log(theTable.childNodes.length);
+            // let children = theTable.childNodes;
+            // for(let i=0; i<children.length; i++){
+            //     console.log(children[i]);
+            // }
+            // theTable.removeChild();
+            // theTable.append(tableRow);
+           let data =  theTable.getElementsByTagName("tr");
+        //    theTable.removeChild(data[data.length-1]);
+           theTable.removeChild(data[0]);
+        //    theTable.insertBefore(tableRow, theTable.firstChild);
+            theTable.append(tableRow);
+            // let children = theTable.childNodes;
+            for(let i=0; i<data.length; i++){
+                console.log(data[i]);
+            }
+        }
+
+        // 更新图表数据
+        chartData.push(parseFloat(messageParts[1])); // 将逗号后的数字部分转换为浮点数
+        chart.data.labels.push(messageCounter);
+
+        // 清除旧数据以保持图表的显示数量
+        if (chartData.length > 25) {
+            chartData.shift();
+            chart.data.labels.shift();
+        }
+
+        chart.update(); // 更新图表
+    });
+</script>
+
+
