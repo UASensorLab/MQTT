@@ -88,11 +88,14 @@
 <div id="div1"></div>
 <div id="div2"></div>
 <div id="div3"></div>
+<script src="secondSensor.js"></script>
+<script src="thirdSensor.js"></script>
 </body>
 </html>
 
 <script type="text/javascript">
     var topic = "test/topic";
+    var topic2 = "test2/topic2";
 
     const options = {
         clean: true,
@@ -104,45 +107,59 @@
 
     const connectUrl = 'ws://149.165.159.142:8083/mqtt'
     const client = mqtt.connect(connectUrl, options)
+    // let client2;
+    const client2 = mqtt.connect(connectUrl, options);
 
     client.on('reconnect', () => {
-        $("#div1").text("Reconnecting...");
+        // $("#div1").text("Reconnecting...");
     });
 
     client.on("close", function () {
-        $("#div1").text("The client has disconnected.....");
+        // $("#div1").text("The client has disconnected.....");
     });
 
     client.on("disconnect", function (packet) {
-        $("#div1").text("Received disconnected packet from broker....." + packet);
+        // $("#div1").text("Received disconnected packet from broker....." + packet);
     });
 
     client.on("offline", function () {
-        $("#div1").text("The client is offline...");
+        // $("#div1").text("The client is offline...");
     });
 
     client.on("error", (error) => {
-        $("#div1").text("An error occurred on the client side....." + error);
+        // $("#div1").text("An error occurred on the client side....." + error);
     });
 
     client.on("packetsend", (packet) => {
-        $("#div1").text("The client has sent the packet....." + packet);
+        // $("#div1").text("The client has sent the packet....." + packet);
     });
 
     var messageCounter = 0; // 用于记录收到的消息的顺序
+    let messageCounter2 = 0;
+    let messageCounter3 = 0;
+    let messageCounter4 = 0;
 
     client.on("packetreceive", (packet) => {
-        $("#div3").text("The client has received the packet....." + packet);
+        // $("#div3").text("The client has received the packet....." + packet);
     });
 
     client.on("connect", function (connack) {
-        $("#div1").text("Successfully connected to the server" + new Date());
+        // $("#div1").text("Successfully connected to the server" + new Date());
 
         client.subscribe(topic, { qos: 2 });
     });
 
+    client2.on("connect", function(connect) {
+
+        client2.subscribe(topic2, { qos: 2 });
+    });
+
     // 创建一个数组来存储第二列数据
     var chartData = [];
+    var chartData2 = [];
+    var chartData3 = [];
+    var chartData4 = [];
+
 
     // 创建图表
     var ctx = document.getElementById('data-chart').getContext('2d');
@@ -183,13 +200,13 @@
     });
 
     let firstGraph = document.getElementById("graph1").getContext("2d");
-    var chart = new Chart(firstGraph, {
+    var chart2 = new Chart(firstGraph, {
         type: 'line',
         data: {
             labels: [],
             datasets: [{
                 label: 'Message Data',
-                data: chartData,
+                data: chartData2,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
                 fill: false
@@ -222,13 +239,13 @@
     });
 
     let secondGraph = document.getElementById("graph2").getContext("2d");
-    var chart = new Chart(secondGraph, {
+    var chart3 = new Chart(secondGraph, {
         type: 'line',
         data: {
             labels: [],
             datasets: [{
                 label: 'Message Data',
-                data: chartData,
+                data: chartData3,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
                 fill: false
@@ -261,13 +278,13 @@
     });
 
     let thirdGraph = document.getElementById("graph3").getContext("2d");
-    var chart = new Chart(thirdGraph, {
+    var chart4 = new Chart(thirdGraph, {
         type: 'line',
         data: {
             labels: [],
             datasets: [{
                 label: 'Message Data',
-                data: chartData,
+                data: chartData4,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
                 fill: false
@@ -352,7 +369,14 @@
 
         // 更新图表数据
         chartData.push(parseFloat(messageParts[1])); // 将逗号后的数字部分转换为浮点数
+        // chartData2.push(parseFloat(messageParts[1]));
+        // chartData3.push(parseFloat(messageParts[1]));
+        // chartData4.push(parseFloat(messageParts[1]));
         chart.data.labels.push(messageCounter);
+        // chart2.data.labels.push(messageCounter);
+        // chart3.data.labels.push(messageCounter);
+        // chart4.data.labels.push(messageCounter);
+
 
         // 清除旧数据以保持图表的显示数量
         if (chartData.length > 25) {
@@ -360,7 +384,48 @@
             chart.data.labels.shift();
         }
 
+        // if (chartData2.length > 25) {
+        //     chartData2.shift();
+        //     chart2.data.labels.shift();
+        // }
+
+        // if (chartData3.length > 25) {
+        //     chartData3.shift();
+        //     chart3.data.labels.shift();
+        // }
+
+        // if (chartData4.length > 25) {
+        //     chartData4.shift();
+        //     chart4.data.labels.shift();
+        // }
+
         chart.update(); // 更新图表
+        // chart2.update();
+        // chart3.update();
+        // chart4.update();
+    });
+
+    client2.on('message', (topic, message, packet) => {
+
+        // 获取当前时间
+        let currentTime = new Date();
+
+        // 将接收到的消息分为三部分：时间、message和收到数据的顺序
+        let messageText = message.toString(); // 将消息转换为字符串
+        let messageParts = messageText.split(','); // 按逗号分割消息
+        let receivedData = `[${currentTime}] Message: ${messageParts[1]}, Order: ${messageCounter2}, Data: ${message}`;
+        messageCounter2++; // 增加消息顺序计数
+
+        // 更新图表数据
+        chartData2.push(parseFloat(messageParts[1]));
+        chart2.data.labels.push(messageCounter2);
+
+        // 清除旧数据以保持图表的显示数量
+        if (chartData2.length > 25) {
+            chartData2.shift();
+            chart2.data.labels.shift();
+        }
+        chart2.update();
     });
 </script>
 
