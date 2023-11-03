@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            test graph
+        </title>
+        <link rel="stylesheet" type="text/css" href="layui.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+        <!-- 引入 Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            html, body{
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .newCharts{
+                padding: 50px;
+            }
+    
+        </style>
+    </head>
+    <body>
+        <div class="newCharts"> <canvas id="graph1"></canvas> </div>
+    </body>
+</html>
+
+<script type="text/javascript">
+    var topic = "test2/topic2";
+
+const options = {
+    clean: true,
+    connectTimeout: 4000,
+    clientId: 'htmlclient' + new Date(),
+    username: 'user',
+    password: '123456',
+}
+
+const connectUrl = 'ws://149.165.159.142:8083/mqtt'
+const client2 = mqtt.connect(connectUrl, options)
+
+client2.on('reconnect', () => {
+        // $("#div1").text("Reconnecting...");
+    });
+
+    client2.on("close", function () {
+        // $("#div1").text("The client has disconnected.....");
+    });
+
+    client2.on("disconnect", function (packet) {
+        // $("#div1").text("Received disconnected packet from broker....." + packet);
+    });
+
+    client2.on("offline", function () {
+        // $("#div1").text("The client is offline...");
+    });
+
+    client2.on("error", (error) => {
+        // $("#div1").text("An error occurred on the client side....." + error);
+    });
+
+    client2.on("packetsend", (packet) => {
+        // $("#div1").text("The client has sent the packet....." + packet);
+    });
+
+    client2.on("packetreceive", (packet) => {
+        // $("#div3").text("The client has received the packet....." + packet);
+    });
+
+client2.on("connect", function (connack) {
+    // $("#div1").text("Successfully connected to the server" + new Date());
+
+    client2.subscribe(topic, { qos: 2 });
+});
+
+let firstGraph = document.getElementById("graph1").getContext("2d");
+
+var chartData2 = [];
+let messageCounter2 = 0;
+
+var chart2 = new Chart(firstGraph, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Message Data',
+            data: chartData2,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                type: 'linear',
+                position: 'bottom',
+                min: 0,
+                title: {
+                    display: true,
+                    text: 'Time'
+                }
+            },
+            y: {
+                min: 0,
+                max: 100,
+                stepSize: 10,
+                title: {
+                    display: true,
+                    text: 'Barrier Resistance (Ω)'
+                }
+            }
+        }
+    }
+});
+
+    client2.on('message', (topic, message, packet) => {
+
+        // 获取当前时间
+        let currentTime = new Date();
+
+        // 将接收到的消息分为三部分：时间、message和收到数据的顺序
+        let messageText = message.toString(); // 将消息转换为字符串
+        let messageParts = messageText.split(','); // 按逗号分割消息
+        let receivedData = `[${currentTime}] Message: ${messageParts[1]}, Order: ${messageCounter2}, Data: ${message}`;
+        messageCounter2++; // 增加消息顺序计数
+
+        // 更新图表数据
+        chartData2.push(parseFloat(messageParts[1]));
+        chart2.data.labels.push(messageCounter2);
+
+        // 清除旧数据以保持图表的显示数量
+        if (chartData2.length > 25) {
+            chartData2.shift();
+            chart2.data.labels.shift();
+        }
+        chart2.update();
+    });
+</script>
