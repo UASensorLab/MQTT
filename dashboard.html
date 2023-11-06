@@ -78,9 +78,9 @@
         </tbody>
     </table>
     <div id="theGraphContainer">
-        <object data="smallgraph1.html" width="500px" height="100%"></object>
-        <object data="smallgraph2.html" width="500px" height="100%"></object>
-        <object data="smallgraph3.html" width="500px" height="100%"></object>
+        <object data="newgraph.html" width="500px" height="100%"></object>
+        <object data="newgraph2.html" width="500px" height="100%"></object>
+        <object data="newgraph3.html" width="500px" height="100%"></object>
     </div>
     <!-- 添加一个 canvas 元素来显示图表 -->
     <canvas id="data-chart"></canvas>
@@ -97,7 +97,7 @@
 
 <script type="text/javascript">
     var topic = "test/topic";
-    var topic2 = "test2/topic2";
+    // var topic2 = "test2/topic2";
 
     const options = {
         clean: true,
@@ -161,7 +161,7 @@
     var chartData = [];
     // var chartData2 = [];
     // var chartData3 = [];
-    var chartData4 = [];
+    // var chartData4 = [];
 
 
     // 创建图表
@@ -280,44 +280,44 @@
     //     }
     // });
 
-    let thirdGraph = document.getElementById("graph3").getContext("2d");
-    var chart4 = new Chart(thirdGraph, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Message Data',
-                data: chartData4,
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    type: 'linear',
-                    position: 'bottom',
-                    min: 0,
-                    title: {
-                        display: true,
-                        text: 'Time'
-                    }
-                },
-                y: {
-                    min: 0,
-                    max: 100,
-                    stepSize: 10,
-                    title: {
-                        display: true,
-                        text: 'Barrier Resistance (Ω)'
-                    }
-                }
-            }
-        }
-    });
+    // let thirdGraph = document.getElementById("graph3").getContext("2d");
+    // var chart4 = new Chart(thirdGraph, {
+    //     type: 'line',
+    //     data: {
+    //         labels: [],
+    //         datasets: [{
+    //             label: 'Message Data',
+    //             data: chartData4,
+    //             borderColor: 'rgba(75, 192, 192, 1)',
+    //             borderWidth: 1,
+    //             fill: false
+    //         }]
+    //     },
+    //     options: {
+    //         responsive: true,
+    //         maintainAspectRatio: false,
+    //         scales: {
+    //             x: {
+    //                 type: 'linear',
+    //                 position: 'bottom',
+    //                 min: 0,
+    //                 title: {
+    //                     display: true,
+    //                     text: 'Time'
+    //                 }
+    //             },
+    //             y: {
+    //                 min: 0,
+    //                 max: 100,
+    //                 stepSize: 10,
+    //                 title: {
+    //                     display: true,
+    //                     text: 'Barrier Resistance (Ω)'
+    //                 }
+    //             }
+    //         }
+    //     }
+    // });
 
     client.on('message', (topic, message, packet) => {
         console.log('msg');
