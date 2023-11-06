@@ -6,8 +6,14 @@
 File: sender.py and receiver.py, 
 MQTT: broker = '149.165.159.142' \ port = 1883, 
 VM:   Indiana Jetstream
-Test: Bashbord.html is the file has three small grah and one large grah.
+Test: dashbord.html is the file has three small grah and one large grah.
 ```
+## File:
+[Sender.py](https://github.com/UASensorLab/MQTT/blob/main/sender.py) is the one large graph, for run all other three graph.
+
+[Sender2.py](https://github.com/UASensorLab/MQTT/blob/main/sender2.py) is the one on top left,first.
+
+[Sender3.py](https://github.com/UASensorLab/MQTT/blob/main/sender3.py) is the one on middle, second. 
 ## Timeline update 
 11/3 (dashboard.html)
   1. added the second client.
