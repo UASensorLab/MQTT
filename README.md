@@ -9,7 +9,7 @@ VM:   Indiana Jetstream
 Test: dashbord.html is the file has three small grah and one large grah.
 ```
 ## File:
-[Sender.py](https://github.com/UASensorLab/MQTT/blob/main/sender.py) is the one large graph, for run all other three graph.
+[Sender2.0.py](https://github.com/UASensorLab/MQTT/blob/main/sender2.0.py) will run all the sender witch use different test sub.
 
 [Sender2.py](https://github.com/UASensorLab/MQTT/blob/main/sender2.py) is the one on top left,first.
 
