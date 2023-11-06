@@ -19,3 +19,5 @@ Test: dashbord.html is the file has three small grah and one large grah.
   1. added the second client.
   2. Added the second sender.
   3. Distributed the 3 graphs into separate HTML files called newgraph.
+  4. Updated the dashboard.html to remove the addition of the fourth graph.
+  5. Updated sender.py to send data to the three graphs.
