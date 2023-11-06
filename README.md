@@ -1,11 +1,11 @@
 # MQTT-sensor test use
 ## Base file : 
-'''
-sender.py and receiver.py, 
-broker = '149.165.159.142' \ port = 1883, 
-Indiana Jetstream
-Bashbord.html is the file has three small grah and one large grah.
-'''
+```bash
+File: sender.py and receiver.py, 
+MQTT: broker = '149.165.159.142' \ port = 1883, 
+VM:   Indiana Jetstream
+Test: Bashbord.html is the file has three small grah and one large grah.
+```
 ## Timeline update 
 11/3 (dashboard.html)
   1. added the second client.
