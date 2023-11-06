@@ -15,11 +15,12 @@ Test: dashbord.html is the file has three small grah and one large grah.
 
 [Sender3.py](https://github.com/UASensorLab/MQTT/blob/main/sender3.py) is the one on middle, second. 
 ## Timeline update 
-11/3 (dashboard.html)
+#11/3 (dashboard.html)
   1. added the second client.
   2. Added the second sender.
   3. Distributed the 3 graphs into separate HTML files called newgraph.
-
-11/6 
+     
+#11/6 (Sender2.0.py) 
   1. Updated the dashboard.html to remove the addition of the fourth graph.
   2. Updated sender.py to send data to the three graphs.
+
