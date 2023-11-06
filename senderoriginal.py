@@ -15,8 +15,6 @@ def on_connect(client,userdata,flags,re):
     if re == 0:
         print('test work')
         client.subscribe("test/topic")
-        client.subscribe("test2/topic2")
-        client.subscribe("test3/topic3")
     else:
         print("test not work")
 
@@ -72,17 +70,11 @@ try:
     while True:
         # Generate a random value (replace this with your desired random data generation)
         random_value = random.uniform(0, 100)  # Change the range as needed
-        random_value2 = random.uniform(0, 100)
-        random_value3 = random.uniform(0, 100)
         # Get the current timestamp
         ts = strftime("%d %b %Y %H:%M:%S", localtime())
         # Format and write the data to the file (or print it)
         data_point = f"{ts}, {random_value:.2f}\n"
-        data_point2 = f"{ts}, {random_value2:.2f}\n"
-        data_point3 = f"{ts}, {random_value3:.2f}\n"
         client.publish("test/topic", f"data:{data_point}")
-        client.publish("test2/topic2", f"data:{data_point2}")
-        client.publish("test3/topic3", f"data:{data_point3}")
         print(f"TIME: {ts}, VALUE: {random_value:.2f}")
         # Sleep for the specified time between data points
         tx = "1"
